@@ -37,7 +37,8 @@ type Weather = {
 };
 
 export default function WeatherApp() {
-  const key = process.env.NEXT_PUBLIC_API_KEY;
+  // const key = process.env.NEXT_PUBLIC_API_KEY;
+  const key = "TEST";
   const [weather, setWeather] = useState<Weather | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Mulai dengan true
 
@@ -48,6 +49,7 @@ export default function WeatherApp() {
       const data: IpApiResponse = await response.json();
 
       if (!data || data.error || !data.latitude || !data.longitude) {
+        toast.error("Gagal mengambil data lokasi dari IP.");
         throw new Error("Gagal mengambil data lokasi dari IP.");
       }
 
@@ -61,18 +63,23 @@ export default function WeatherApp() {
   // Fungsi untuk mengambil data cuaca
   const fetchCurrentWeather = async (city: string) => {
     if (!city) {
-      toast.error("Nama kota tidak valid.");
       setLoading(false);
+      toast.error("Nama kota tidak valid.");
       return;
     }
 
     try {
       const response = await fetch(
-        `http://api.weatherapi.com/v1/current.json?key=${key}&q=${encodeURIComponent(city)}&aqi=no`
+        `https://api.weatherapi.com/v1/current.json?key=${key}&q=${encodeURIComponent(city)}&aqi=no`
       );
+      if(response.status){
+        setLoading(false);
+        return toast.error(response.statusText);
+      }
       const weatherData: WeatherApiResponse = await response.json();
 
       if (!weatherData || weatherData.error || !weatherData.current) {
+        setLoading(false);
         return toast.error(weatherData.error?.message || "Gagal mengambil data cuaca.");
       }
 
@@ -87,16 +94,16 @@ export default function WeatherApp() {
 
       setLoading(false);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Gagal mengambil data cuaca.");
       setLoading(false);
+      toast.error(error instanceof Error ? error.message : "Gagal mengambil data cuaca.");
     }
   };
 
   useEffect(() => {
     // Validasi API key
     if (!key) {
-      toast.error("API key tidak ditemukan.");
       setLoading(false);
+      toast.error("API key tidak ditemukan.");
       return;
     }
 
@@ -111,6 +118,7 @@ export default function WeatherApp() {
 
   return (
     <AppLayout>
+      <Toaster position="top-right"/>
       <WeatherCard weather={weather}/>
       <WeatherCardDetail feel_like={weather?.feel_like} humidity={weather?.humidity} wind_kph={weather?.wind_kph}/>
       {/* Forecast */}
