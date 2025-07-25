@@ -37,8 +37,7 @@ type Weather = {
 };
 
 export default function WeatherApp() {
-  // const key = process.env.NEXT_PUBLIC_API_KEY;
-  const key = "TEST";
+  const key = process.env.NEXT_PUBLIC_API_KEY;
   const [weather, setWeather] = useState<Weather | null>(null);
   const [loading, setLoading] = useState<boolean>(true); // Mulai dengan true
 
