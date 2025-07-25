@@ -71,7 +71,7 @@ export default function WeatherApp() {
       const response = await fetch(
         `https://api.weatherapi.com/v1/current.json?key=${key}&q=${encodeURIComponent(city)}&aqi=no`
       );
-      if(response.status){
+      if(response.status == 401){
         setLoading(false);
         return toast.error(response.statusText);
       }
